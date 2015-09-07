@@ -1,6 +1,7 @@
 import csv 
 from PIL import Image
 import matplotlib.pyplot as plt 
+import matplotlib
 import numpy as np
 import scipy.spatial.distance as sp
 import scipy
@@ -108,6 +109,8 @@ def get_probs(all_data):
 	plt.bar(ind,prior_probs.values())
 	plt.savefig("prior_probs.pdf")
 
+# gets data by label 
+# returns data with label
 def get_data_by_label(all_data, label):
 	data_with_label = []
 	for data in all_data:
@@ -115,21 +118,8 @@ def get_data_by_label(all_data, label):
 			data_with_label.append(data)
 	return data_with_label 	
 
-# run me for question 1 part b
-def partb():
-	all_data = setup()
-	display_each(all_data)
-
-# run me for question 1 part c
-def partc():
-	all_data = setup()
-	get_probs(all_data)
-
-# run me for question 1 part d
-def partd():
-	all_data = setup()
-	mainKNN(all_data)
-
+# converst all data into scipy arrays
+# returns scipy array
 def convert_scipy(all_data):
 	new_data = []
 	for label, data in all_data:
@@ -137,6 +127,10 @@ def convert_scipy(all_data):
 		new_data.append((label, sci_data))
 	return new_data
 
+# calculates the combination of ones and zeros
+# finds the diferences between pair 
+# returns genuine and imposter distance vectors
+# TODO: make fast for all data
 def  binary_distances(all_data):
 	zeros = get_data_by_label(all_data, 0)
 	ones = get_data_by_label(all_data, 1)
@@ -162,27 +156,63 @@ def  binary_distances(all_data):
 	print "imposter: ", np.mean(imposter), " genuine: ", np.mean(genuine)
 	return (genuine, imposter)
 
+# plots histogram of distances
+# returns plot
 def plot_distances(data_list):
 	bins, edges = np.histogram(data_list, 50, normed=1)
 	left,right = edges[:-1],edges[1:]
 	X = np.array([left,right]).T.flatten()
 	Y = np.array([bins,bins]).T.flatten()
+	return plt.plot(X,Y)
 
-	plt.plot(X,Y)
-	
+# possible helper function for plot roc
+def generate_ratios(genuine,imposter,thresh):
+	print(genuine[np.where(genuine<thresh)])
+
+# TODO: plot roc curve and find out how
+def roc_plot(genuine, imposter):
+	# generate_ratios(genuine,imposter,1000)
+	for i in range(4000):
+
+
+
+# run me for question 1 part b
+def partb():
+	all_data = setup()
+	display_each(all_data)
+
+# run me for question 1 part c
+def partc():
+	all_data = setup()
+	get_probs(all_data)
+
+# run me for question 1 part d
+def partd():
+	all_data = setup()
+	mainKNN(all_data)
 
 def parte():
 	print("start")
 	all_data = setup()
 	print("data setup")
 	genuine,imposter=binary_distances(all_data)
-	plot_distances(genuine)
-	plot_distances(imposter)
+	genuine_plot = plot_distances(genuine)
+	imposter_plot = plot_distances(imposter)
+	genuine_patch = matplotlib.patches.Patch(color = 'blue', label = 'genuine')
+	imposter_patch = matplotlib.patches.Patch(color = 'green', label = 'imposter')
+	plt.legend(handles = [genuine_patch, imposter_patch])
 	plt.show()
+
+def partf():
+	all_data = setup()
+	genuine, imposter = binary_distances(all_data)
+	roc_plot(genuine, imposter)
+
 	
 # partb()
 # partc()
 # partd()
-parte()
+# parte()
+partf()
 
 
