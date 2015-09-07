@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import scipy.spatial.distance as sp
 import scipy
+import itertools
 
 # import data csv data 
 # return list of tuples [(label0, [pixel0, pixel1],...,pixel784), ...]
@@ -107,23 +108,81 @@ def get_probs(all_data):
 	plt.bar(ind,prior_probs.values())
 	plt.savefig("prior_probs.pdf")
 
+def get_data_by_label(all_data, label):
+	data_with_label = []
+	for data in all_data:
+		if(int(data[0]) == int(label) ):
+			data_with_label.append(data)
+	return data_with_label 	
+
 # run me for question 1 part b
 def partb():
-	all_data=setup()
+	all_data = setup()
 	display_each(all_data)
 
 # run me for question 1 part c
 def partc():
-	all_data=setup()
+	all_data = setup()
 	get_probs(all_data)
 
 # run me for question 1 part d
 def partd():
-	all_data=setup()
+	all_data = setup()
 	mainKNN(all_data)
 
+def convert_scipy(all_data):
+	new_data = []
+	for label, data in all_data:
+		sci_data = scipy.array(data).astype(int)
+		new_data.append((label, sci_data))
+	return new_data
+
+def  binary_distances(all_data):
+	zeros = get_data_by_label(all_data, 0)
+	ones = get_data_by_label(all_data, 1)
+
+	#Drop some of the data because the combinations are too large for us
+	#canthandletheData
+	zeros=zeros[50:250]
+	ones=ones[50:250]
+
+	sci_zeros = convert_scipy(zeros)
+	sci_ones = convert_scipy(ones)
+	ones_and_zeros=sci_ones+sci_zeros
+
+	combinations = itertools.combinations(ones_and_zeros, 2)
+	imposter = np.array([])
+	genuine = np.array([])
+	for el1, el2 in combinations:
+		dist = sp.euclidean(el1[1], el2[1])
+		if (el1[0] == el2[0]):
+			genuine = np.append(genuine,dist) 
+		else:
+			imposter = np.append(imposter,dist) 
+	print "imposter: ", np.mean(imposter), " genuine: ", np.mean(genuine)
+	return (genuine, imposter)
+
+def plot_distances(data_list):
+	bins, edges = np.histogram(data_list, 50, normed=1)
+	left,right = edges[:-1],edges[1:]
+	X = np.array([left,right]).T.flatten()
+	Y = np.array([bins,bins]).T.flatten()
+
+	plt.plot(X,Y)
+	
+
+def parte():
+	print("start")
+	all_data = setup()
+	print("data setup")
+	genuine,imposter=binary_distances(all_data)
+	plot_distances(genuine)
+	plot_distances(imposter)
+	plt.show()
+	
 # partb()
 # partc()
-partd()
+# partd()
+parte()
 
 
