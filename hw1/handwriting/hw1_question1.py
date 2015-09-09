@@ -76,7 +76,7 @@ def modify_structure(all_data):
 
 # finds kth nearest neightbor of the unique digits where k=1
 # prints the digit label and the nearest neighbor guess
-def mainKNN(all_data):
+def firstKNN(all_data):
 	data_no_digits, label, digits = find_each(all_data)
 	digits = scipy.array(digits).astype(int)
 	no_dig_label,no_dig_data = modify_structure(data_no_digits)
@@ -84,11 +84,14 @@ def mainKNN(all_data):
 		distance = []
 		for i in range(len(no_dig_data)):
 			distance.append(sp.euclidean(no_dig_data[i],digits[k]))
-		mindex=np.argmin(np.array(distance))
+		mindex = np.argmin(np.array(distance))
 		if(int(no_dig_label[mindex]) == int(label[k])):
-			print "actual",label[k], ", label of nn", no_dig_label[mindex] 
+			print "actual",label[k], ", label of nn", no_dig_label[mindex] #, distance[mindex]
 		else:
 			print "actual",label[k], ", label of nn", no_dig_label[mindex], "*"
+
+def kNN(all_data, digit, k):
+	pass
 
 # calculates the prior of a digit in the data
 # saves results to a pdf
@@ -153,7 +156,7 @@ def  binary_distances(all_data):
 			genuine = np.append(genuine,dist) 
 		else:
 			imposter = np.append(imposter,dist) 
-	print "imposter: ", np.mean(imposter), " genuine: ", np.mean(genuine)
+	print "average imposter: ", np.mean(imposter), " average genuine: ", np.mean(genuine)
 	return (genuine, imposter)
 
 # plots histogram of distances
@@ -165,16 +168,20 @@ def plot_distances(data_list):
 	Y = np.array([bins,bins]).T.flatten()
 	return plt.plot(X,Y)
 
-# possible helper function for plot roc
-def generate_ratios(genuine,imposter,thresh):
-	print(genuine[np.where(genuine<thresh)])
-
 # TODO: plot roc curve and find out how
+def roc_plot_helper(genuine, imposter, thresh_dist):
+	TPR = sum(genuine[np.where(genuine<thresh_dist)]) / float(sum(genuine))
+	TNR = sum(imposter[np.where(imposter<thresh_dist)]) / float(sum(imposter))
+	return (TPR, TNR)
+
 def roc_plot(genuine, imposter):
-	# generate_ratios(genuine,imposter,1000)
-	for i in range(4000):
-
-
+	TPR = []
+	TNR = []
+	for thresh in range(4000):
+		tpr, tnr = roc_plot_helper(genuine, imposter, thresh)
+		TPR.append(tpr)
+		TNR.append(tnr)
+	return plt.plot(TNR, TPR)
 
 # run me for question 1 part b
 def partb():
@@ -189,7 +196,7 @@ def partc():
 # run me for question 1 part d
 def partd():
 	all_data = setup()
-	mainKNN(all_data)
+	firstKNN(all_data)
 
 def parte():
 	print("start")
@@ -206,13 +213,20 @@ def parte():
 def partf():
 	all_data = setup()
 	genuine, imposter = binary_distances(all_data)
-	roc_plot(genuine, imposter)
+	plot = roc_plot(genuine, imposter)
+	plt.set_xlabel("TNR")
+	plt.set_ylabel("TPR")
+	plt.show()
 
+def partg():
+	all_data = setup()
+	kNN(all_data)
 	
 # partb()
 # partc()
-# partd()
+partd()
 # parte()
-partf()
+# partf()
+# partg()
 
 
