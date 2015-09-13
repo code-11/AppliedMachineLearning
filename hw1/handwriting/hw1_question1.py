@@ -1,4 +1,5 @@
 import csv 
+import pandas as pd
 from PIL import Image
 import matplotlib.pyplot as plt 
 import matplotlib
@@ -6,6 +7,7 @@ import numpy as np
 import scipy.spatial.distance as sp
 import scipy
 import itertools
+import math
 
 # import data csv data 
 # return list of tuples [(label0, [pixel0, pixel1],...,pixel784), ...]
@@ -19,6 +21,10 @@ def setup():
 			digits.append((row[0],row[1:]))
 		index+=1
 	return digits
+
+def quick_setup():
+	data = pd.read_csv('train.csv')
+	return data
 
 # prints lengths of all_data and all_data duplicates removed
 def duplicate_check(all_data):
@@ -133,7 +139,6 @@ def convert_scipy(all_data):
 # calculates the combination of ones and zeros
 # finds the diferences between pair 
 # returns genuine and imposter distance vectors
-# TODO: make fast for all data
 def  binary_distances(all_data):
 	zeros = get_data_by_label(all_data, 0)
 	ones = get_data_by_label(all_data, 1)
@@ -159,6 +164,44 @@ def  binary_distances(all_data):
 	print "average imposter: ", np.mean(imposter), " average genuine: ", np.mean(genuine)
 	return (genuine, imposter)
 
+#Returns a tuble with True if genuine and the distance between the digits
+def dists_from_combos(data,tup):
+	lbl1 = data.loc[tup[0]]["label"]
+	lbl2 = data.loc[tup[1]]["label"]
+
+	pixl1 = data.loc[tup[0]].values
+	pixl2 = data.loc[tup[1]].values
+
+	return (lbl1==lbl2,sp.euclidean(pixl1,pixl2))
+
+
+def quick_binary_distances(data):
+	print("[Load Data]")
+	both = data.loc[ (data["label"] == 1) | (data["label"] == 0)]
+
+	print("[Find Indicies]")
+	indices = both.index.values
+
+	print("[Taking Combinations]")
+	all_combinations = itertools.combinations(indices, 2)
+
+	print("[Converting to np]")
+	all_c = np.array(list(all_combinations))
+ 
+ 	print("[Calculate Distances from Indicies]")
+
+ 	genuine=np.array([])
+ 	imposter=np.array([])
+ 	for i in xrange(len(all_c)):
+ 		gen, dis= dists_from_combos(data,all_c[i])
+ 		if (gen):
+ 			genuine=np.append(genuine,dis)
+ 		else:
+ 			imposter=np.append(imposter,dis)
+
+ 	return (genuine, imposter)
+
+
 # plots histogram of distances
 # returns plot
 def plot_distances(data_list):
@@ -177,7 +220,9 @@ def roc_plot_helper(genuine, imposter, thresh_dist):
 def roc_plot(genuine, imposter):
 	TPR = []
 	TNR = []
-	for thresh in range(4000):
+	m_gen = max(genuine)
+	m_imp = max(imposter) 
+	for thresh in range(int(max([m_gen, m_imp]))):
 		tpr, tnr = roc_plot_helper(genuine, imposter, thresh)
 		TPR.append(tpr)
 		TNR.append(tnr)
@@ -193,12 +238,27 @@ def partc():
 	all_data = setup()
 	get_probs(all_data)
 
-# run me for question 1 part d
+# knn where k = 1
 def partd():
 	all_data = setup()
 	firstKNN(all_data)
 
+# calculates distances on MNIST dataset for 1's and 0's
 def parte():
+	all_data = quick_setup()
+	genuine,imposter = quick_binary_distances(all_data)
+	genuine_plot = plot_distances(genuine)
+	imposter_plot = plot_distances(imposter)
+	genuine_patch = matplotlib.patches.Patch(color = 'blue', label = 'genuine')
+	imposter_patch = matplotlib.patches.Patch(color = 'green', label = 'imposter')
+	plt.legend(handles = [genuine_patch, imposter_patch])
+	plt.title("Binary Distances")
+	plt.savefig("parte.png")
+	plt.show()
+
+
+# run this for our original implementation for part e
+def parte2():
 	print("start")
 	all_data = setup()
 	print("data setup")
@@ -210,7 +270,16 @@ def parte():
 	plt.legend(handles = [genuine_patch, imposter_patch])
 	plt.show()
 
+
+# plot the roc curve on all points using parte
 def partf():
+	all_data = quick_setup()
+	quick_binary_distances(all_data)
+	roc_plot(genuine,imposter)
+	plt.show()
+
+# plots an roc curve using parte2
+def partf2():
 	all_data = setup()
 	genuine, imposter = binary_distances(all_data)
 	plot = roc_plot(genuine, imposter)
@@ -218,15 +287,21 @@ def partf():
 	plt.set_ylabel("TPR")
 	plt.show()
 
+
+# knn classifier
 def partg():
 	all_data = setup()
 	kNN(all_data)
 	
+
+
 # partb()
 # partc()
-partd()
-# parte()
+# partd()
+parte()
+# parte2()
 # partf()
+# partf2()
 # partg()
 
 
