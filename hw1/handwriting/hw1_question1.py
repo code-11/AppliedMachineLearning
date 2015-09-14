@@ -96,8 +96,27 @@ def firstKNN(all_data):
 		else:
 			print "actual",label[k], ", label of nn", no_dig_label[mindex], "*"
 
+def calc_distances_knn(row,digit):
+	np_row=row
+	label=np_row[0]
+	pixl=np.delete(np_row,0)
+	dis=sp.euclidean(pixl,digit)
+	return (label,dis)
+
 def kNN(all_data, digit, k):
-	pass
+	labels=np.array([])
+	dists=np.array([])
+
+	for row in all_data.values:
+		label,dist=calc_distances_knn(row,digit)
+		labels=np.append(labels,label)
+		dists=np.append(dists,dist)
+
+	sorted_indicies=np.argsort(dists)
+	nearest_neighbor_indexes=sorted_indicies[:k]
+	#TODO get the neighbors labels and do majroity vote
+
+
 
 # calculates the prior of a digit in the data
 # saves results to a pdf
@@ -290,18 +309,18 @@ def partf2():
 
 # knn classifier
 def partg():
-	all_data = setup()
-	kNN(all_data)
+	all_data = quick_setup()
+	kNN(all_data,np.zeros(784),5)
 	
 
 
 # partb()
 # partc()
 # partd()
-parte()
+# parte()
 # parte2()
 # partf()
 # partf2()
-# partg()
+partg()
 
 
