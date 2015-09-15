@@ -43,7 +43,7 @@ def duplicate_check(all_data):
 	print(len(data_set))
 
 # displays image of pixel array
-def make_image(raw_data):
+def make_image(raw_data,num):
 	img = Image.new( 'RGB', (28,28), "black") # create a new black image
 	pixels = img.load() # create the pixel map
 	index=0
@@ -52,7 +52,7 @@ def make_image(raw_data):
 	    	val= int(raw_data[index])
         	pixels[j,i] = (val,val,val)
 	        index+=1
-	img.show()
+	img.save(str(num)+".jpg", "JPEG")
 
 # finds first example of a unique digit 
 # returns data without the example digits
@@ -76,7 +76,7 @@ def display_each(all_data):
 	new_all_data,seen_label, seen_data = find_each(all_data)
 	for index in range(len(seen_label)):
 		print(seen_label[index])
-		make_image(seen_data[index])
+		make_image(seen_data[index],index)
 
 # converts [(), (), ...] to ([], [], ...)
 def modify_structure(all_data):
@@ -455,7 +455,7 @@ def partj():
 
 
 
-# partb()
+partb()
 # partc()
 # partd()
 # parte()
@@ -466,6 +466,6 @@ def partj():
 # parth()
 # parti()
 # parthi()
-partj()
+# partj()
 
 
