@@ -13,7 +13,6 @@ import itertools
 import math
 import cPickle as pickle
 
-# import data csv data 
 # return list of tuples [(label0, [pixel0, pixel1],...,pixel784), ...]
 def setup():
 	data_file=open("train.csv","rb")
@@ -26,9 +25,12 @@ def setup():
 		index+=1
 	return digits
 
+# slightly optimized version of setup
 def quick_setup():
 	data = pd.read_csv('train.csv')
 	return data
+
+# loads test data
 def quick_test_setup():
 	data =pd.read_csv('test.csv')
 	return data
@@ -103,6 +105,8 @@ def firstKNN(all_data):
 		else:
 			print "actual",label[k], ", label of nn", no_dig_label[mindex], "*"
 
+# calculates the distance for knn
+# returns tuple of label and distance
 def calc_distances_knn(row,digit):
 	np_row=row
 	label=np_row[0]
@@ -110,6 +114,8 @@ def calc_distances_knn(row,digit):
 	dis=sp.euclidean(pixl,digit)
 	return (label,dis)
 
+# calculates the majority vote for knn
+# returns which label is most popular 
 def majority_vote(all_data,nn_indexes):
 	label_counts={}
 	for index in nn_indexes:
@@ -120,6 +126,7 @@ def majority_vote(all_data,nn_indexes):
 			label_counts[label]=1
 	return max(label_counts, key=label_counts.get)
 
+# our implementation of k nearest neightbor 
 def kNN(all_data, digit, k):
 	labels=np.array([])
 	dists=np.array([])
@@ -135,6 +142,8 @@ def kNN(all_data, digit, k):
 	nearest_neighbor_indexes=sorted_pandas_indices[:k]
 	return majority_vote(all_data,nearest_neighbor_indexes)
 
+# preforms knn on many digits
+# returns label perdictions
 def KNNBatch(all_data, digits, k):
 	results=np.array([])
 	pbar=ProgressBar()
@@ -143,6 +152,8 @@ def KNNBatch(all_data, digits, k):
 		results=np.append(results,kNN(all_data,digit,k))
 	return results
 
+# calculated the three fold cross vaidation 
+# returns tuple of all tests and results
 def three_cross_validation(all_data):
 	only_pixls= all_data.drop("label",axis=1)
 	num_rows=all_data.shape[0]
@@ -167,6 +178,8 @@ def three_cross_validation(all_data):
 
 	return (all_tests,all_results)
 
+# produces the accuracy of our knn model
+# returns float of accuracy
 def right_or_wrong(all_results,all_tests):
 	right=0
 	wrong=0
@@ -253,7 +266,9 @@ def dists_from_combos(data,tup):
 
 	return (lbl1==lbl2,sp.euclidean(pixl1,pixl2))
 
-
+# an optimized version which calculated the distances between
+# all combinations of ones and zeros
+# returns tuple of geniune and imposter vectors
 def quick_binary_distances(data):
 	print("[Load Data]")
 	both = data.loc[ (data["label"] == 1) | (data["label"] == 0)]
@@ -293,12 +308,14 @@ def plot_distances(data_list):
 	Y = np.array([bins,bins]).T.flatten()
 	return plt.plot(X,Y)
 
-# TODO: plot roc curve and find out how
+# calculates the true positive rate and true negative rate
+# based on given threshold and returns them in a tuple
 def roc_plot_helper(genuine, imposter, thresh_dist):
 	TPR = sum(genuine[np.where(genuine<thresh_dist)]) / float(sum(genuine))
 	TNR = sum(imposter[np.where(imposter<thresh_dist)]) / float(sum(imposter))
 	return (TPR, TNR)
 
+# plots the roc curve and returns the plot
 def roc_plot(genuine, imposter):
 	TPR = []
 	TNR = []
@@ -321,8 +338,6 @@ def plot_confusion_matrix(df_confusion, title='Confusion matrix', cmap=plt.cm.gr
     #plt.tight_layout()
     plt.ylabel(df_confusion.index.name)
     plt.xlabel(df_confusion.columns.name)
-
-
 
 # run me for question 1 part b
 def partb():
@@ -406,18 +421,19 @@ def partf2():
 	plt.set_ylabel("TPR")
 	plt.show()
 
-
 # knn classifier
 def partg():
 	all_data = quick_setup()
 	kNN(all_data,np.zeros(784),5)
 
+# 3 fold cross validation
 def parth():
 	print("[Loading Data]")
 	all_data = quick_setup().head(4000)
 	all_tests,all_results=three_cross_validation(all_data)
 	print(right_or_wrong(all_tests,all_results))
 
+# confusion matrix
 def parti():
 	print("[Loading Data]")
 	all_data = quick_setup().head(500)
@@ -427,7 +443,6 @@ def parti():
 	df_confusion = pd.crosstab(actu, pred)
 	plot_confusion_matrix(df_confusion)
 	plt.savefig("parti.png")
-
 	# print(confusion_matrix(all_results,all_tests,[0,1,2,3,4,5,6,7,8,9]))
 
 
@@ -455,7 +470,7 @@ def partj():
 
 
 
-partb()
+# partb()
 # partc()
 # partd()
 # parte()
