@@ -87,8 +87,8 @@ def actual_test():
 	np.savetxt("titanic.csv",predicted,delimiter=",")
 
 
-#self_test()
-actual_test()
+self_test()
+# actual_test()
 
 
 
