@@ -1,0 +1,28 @@
+H	
+	80,915
+
+	.0649 SUPP(dogfood,catfood)
+
+	SUPP(DogFood)=80915/927125=.087275
+	SUPP(CatFoof)=185279/927125=.1998425
+	MULT=.01744
+	.0649/.01744=3.721
+
+I
+	SUPP(DogFood)=.087275
+	SUPP(CatFood)=.1998524
+	SUPP(CatLitter)=130,122/927125=.14035
+	SUPP(Burgers)=0.03209
+
+	We would be able to definitely eliminate all pairs with DogFood and Burgers in them, because even by themselves, they don't have enough counts to meet the minimum support
+
+J
+	Support is slightly hared to conceptualize, but counts are not. a minimum support of .1 can be transferred into a minimum count. .1<x/927125
+	x>92712.5 so we can know if a itemset has a count of less than 92712 then it will be cut.
+
+	Pairs made from ArtisianTapWater,VitaminCTablets and Ketchup are probably out, although we dont know for sure.Using a bit of domain knowledge, any rare item is likely to not to have a large number of purchases. Although catfood and dog food have a large number of counts, combining them with anything non-pet related will likely (but not definitely) result in a count less than 92712. For instance, {$Grape juice, Catfood, Dogfood$} 
+
+
+
+
+
