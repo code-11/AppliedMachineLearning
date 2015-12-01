@@ -1,0 +1,31 @@
+digraph Tree {
+0 [label="X[0] <= 328.5000\nmse = 0.0541941322095\nsamples = 3146", shape="box"] ;
+1 [label="X[1] <= 927.0000\nmse = 0.0193184750629\nsamples = 1280", shape="box"] ;
+0 -> 1 ;
+2 [label="X[0] <= 270.5000\nmse = 0.011076644286\nsamples = 1001", shape="box"] ;
+1 -> 2 ;
+3 [label="(...)", shape="box"] ;
+2 -> 3 ;
+1596 [label="(...)", shape="box"] ;
+2 -> 1596 ;
+1989 [label="X[0] <= 168.5000\nmse = 0.0167798680433\nsamples = 279", shape="box"] ;
+1 -> 1989 ;
+1990 [label="(...)", shape="box"] ;
+1989 -> 1990 ;
+2271 [label="(...)", shape="box"] ;
+1989 -> 2271 ;
+2540 [label="X[1] <= 438.5000\nmse = 0.0294044461821\nsamples = 1866", shape="box"] ;
+0 -> 2540 ;
+2541 [label="X[0] <= 553.5000\nmse = 0.0230072336559\nsamples = 646", shape="box"] ;
+2540 -> 2541 ;
+2542 [label="(...)", shape="box"] ;
+2541 -> 2542 ;
+3127 [label="(...)", shape="box"] ;
+2541 -> 3127 ;
+3832 [label="X[0] <= 553.5000\nmse = 0.0160761363985\nsamples = 1220", shape="box"] ;
+2540 -> 3832 ;
+3833 [label="(...)", shape="box"] ;
+3832 -> 3833 ;
+4948 [label="(...)", shape="box"] ;
+3832 -> 4948 ;
+}
